@@ -16,7 +16,7 @@ function Settings() {
     try{
 
       await axios.post(
-        "http://localhost:5000/api/settings",
+        "https://smart-crm-marketing-automation.vercel.app/api/settings",
         settings
       );
 

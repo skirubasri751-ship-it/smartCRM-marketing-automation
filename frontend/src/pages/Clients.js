@@ -20,7 +20,7 @@ function Clients() {
   }, []);
 
   const fetchClients = async () => {
-    const res = await axios.get("http://localhost:5000/api/clients");
+    const res = await axios.get("https://smart-crm-marketing-automation.vercel.app/api/clients");
     setClients(res.data);
   };
 

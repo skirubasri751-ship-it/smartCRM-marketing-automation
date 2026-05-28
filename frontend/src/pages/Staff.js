@@ -23,7 +23,7 @@ function Staff() {
     try {
 
       const res = await axios.get(
-        "http://localhost:5000/api/staff"
+        "https://smart-crm-marketing-automation.vercel.app/api/staff"
       );
 
       setStaffs(res.data || []);

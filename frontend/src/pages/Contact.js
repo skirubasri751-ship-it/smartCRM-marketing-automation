@@ -17,7 +17,7 @@ function Contact() {
     try{
 
       await axios.post(
-        "http://localhost:5000/api/messages",
+        "https://smart-crm-marketing-automation.vercel.app/api/messages",
         message
       );
 
