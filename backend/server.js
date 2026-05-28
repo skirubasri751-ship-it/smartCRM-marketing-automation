@@ -28,4 +28,6 @@ app.use("/api/tasks", taskRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/settings", settingRoutes);
 
-module.exports= app;
+app.listen(process.env.PORT, () => {
+  console.log("Server Running");
+});
