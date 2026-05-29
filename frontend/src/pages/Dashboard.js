@@ -1,39 +1,100 @@
-import React from "react";
-import Sidebar from "../components/Sidebar";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Link } from "react-router-dom";
 
-function Dashboard() {
+const Dashboard = () => {
+
+  const [dashboard, setDashboard] = useState({
+    clientsCount: 0,
+    staffCount: 0,
+    tasksCount: 0,
+    contactsCount: 0,
+    usersCount: 0
+  });
+
+  useEffect(() => {
+    fetchDashboard();
+  }, []);
+
+  const fetchDashboard = async () => {
+
+    try {
+
+      const res = await axios.get(
+        "http://localhost:5000/api/dashboard"
+      );
+
+      setDashboard(res.data);
+
+    } catch (error) {
+
+      console.log(error);
+    }
+  };
 
   return (
+
     <div className="app">
 
-      <Sidebar />
+      {/* SIDEBAR */}
+
+      <div className="sidebar">
+
+        <h1 className="logo">
+          SMARTCRM
+        </h1>
+
+        <Link to="/dashboard">Dashboard</Link>
+
+        <Link to="/clients">Clients</Link>
+
+        <Link to="/staff">Staff</Link>
+
+        <Link to="/tasks">Tasks</Link>
+
+        <Link to="/analytics">Analytics</Link>
+
+        <Link to="/team">Team</Link>
+
+        <Link to="/settings">Settings</Link>
+
+        <Link to="/contact">Contact</Link>
+
+      </div>
+
+      {/* MAIN CONTENT */}
 
       <div className="main-content">
 
         <h1 className="page-title">
-          SMARTCRM DASHBOARD
+          Dashboard
         </h1>
 
         <div className="dashboard-cards">
 
           <div className="dashboard-box">
-            <h2>120+</h2>
+            <h2>{dashboard.clientsCount}</h2>
             <p>Total Clients</p>
           </div>
 
           <div className="dashboard-box">
-            <h2>40+</h2>
-            <p>Staff Members</p>
+            <h2>{dashboard.staffCount}</h2>
+            <p>Total Staff</p>
           </div>
 
           <div className="dashboard-box">
-            <h2>87%</h2>
-            <p>Marketing Growth</p>
+            <h2>{dashboard.tasksCount}</h2>
+            <p>Total Tasks</p>
           </div>
 
           <div className="dashboard-box">
-            <h2>65+</h2>
-            <p>Completed Campaigns</p>
+            <h2>{dashboard.contactsCount}</h2>
+            <p>Total Contacts</p>
+          </div>
+
+          <div className="dashboard-box">
+            <h2>{dashboard.usersCount}</h2>
+            <p>Registered Users</p>
           </div>
 
         </div>
@@ -42,6 +103,6 @@ function Dashboard() {
 
     </div>
   );
-}
+};
 
 export default Dashboard;

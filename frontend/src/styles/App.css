@@ -80,18 +80,18 @@ body{
 .search-bar,
 .search-input{
   width:100%;
-  padding:16px;
+  padding:15px;
   margin-bottom:25px;
   border:none;
-  border-radius:15px;
-  background:#1a1a1a;
+  border-radius:12px;
+  background:#111;
   color:white;
   font-size:18px;
 }
 
 .search-bar::placeholder,
 .search-input::placeholder{
-  color:#aaa;
+  color:#999;
 }
 
 /* FORM */
@@ -103,7 +103,7 @@ body{
   border-radius:25px;
   padding:30px;
   margin-bottom:40px;
-  box-shadow:0 0 20px rgba(255,0,60,0.4);
+  box-shadow:0 0 20px rgba(255,0,60,0.3);
 }
 
 .form-container{
@@ -120,7 +120,8 @@ body{
 .task-form select{
   flex:1;
   min-width:200px;
-  padding:18px;
+  height:60px;
+  padding:0 18px;
   border-radius:15px;
   border:2px solid #333;
   background:#000;
@@ -128,10 +129,10 @@ body{
   font-size:18px;
 }
 
-.form-container input::placeholder,
-.task-form input::placeholder,
-.task-form textarea::placeholder{
-  color:#888;
+.task-form textarea{
+  min-height:60px;
+  padding-top:18px;
+  resize:none;
 }
 
 .form-container input:focus,
@@ -154,7 +155,7 @@ body{
   color:white;
   border:none;
   padding:15px 20px;
-  border-radius:15px;
+  border-radius:12px;
   font-size:18px;
   font-weight:bold;
   cursor:pointer;
@@ -165,7 +166,6 @@ body{
 .add-btn:hover,
 .update-btn:hover{
   transform:scale(1.03);
-  box-shadow:0 0 20px #2ecc71;
 }
 
 .edit-btn{
@@ -176,11 +176,6 @@ body{
   border-radius:10px;
   cursor:pointer;
   font-size:16px;
-  transition:0.3s;
-}
-
-.edit-btn:hover{
-  transform:scale(1.03);
 }
 
 .delete-btn{
@@ -191,11 +186,6 @@ body{
   border-radius:10px;
   cursor:pointer;
   font-size:16px;
-  transition:0.3s;
-}
-
-.delete-btn:hover{
-  transform:scale(1.03);
 }
 
 .back-btn{
@@ -209,31 +199,34 @@ body{
   font-size:16px;
 }
 
-/* CARD GRID */
-
-.card-grid,
-.tasks-grid,
-.analytics-grid,
-.dashboard-cards{
-  width:100%;
-  display:grid;
-  gap:25px;
-}
+/* GRID */
 
 .card-grid{
-  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:25px;
+  width:100%;
 }
 
 .tasks-grid{
-  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:25px;
+  width:100%;
 }
 
 .analytics-grid{
-  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
+  width:100%;
 }
 
 .dashboard-cards{
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
+  width:100%;
 }
 
 /* CARD */
@@ -259,7 +252,7 @@ body{
   box-shadow:0 0 25px #ff003c;
 }
 
-/* TEXT FIX */
+/* CARD TEXT */
 
 .card h3,
 .task-card h3,
@@ -274,33 +267,11 @@ body{
 .task-card p,
 .analytics-card p,
 .dashboard-box p,
-.card span,
-.task-card span{
+.task-card span,
+.card span{
   color:white !important;
   font-size:18px;
   margin:10px 0;
-}
-
-/* TASKS PAGE */
-
-.tasks-container{
-  padding:20px;
-  min-height:100vh;
-  background:#000;
-  color:white;
-}
-
-.tasks-heading{
-  font-size:55px;
-  margin-bottom:30px;
-  color:white;
-  text-shadow:0 0 10px white;
-}
-
-.task-buttons{
-  display:flex;
-  gap:10px;
-  margin-top:20px;
 }
 
 /* ANALYTICS */
@@ -322,7 +293,8 @@ body{
 
 .dashboard-box{
   text-align:center;
-  padding:35px;
+  padding:30px;
+  min-width:0;
 }
 
 .dashboard-box h2{
@@ -331,6 +303,26 @@ body{
 
 .dashboard-box p{
   font-size:22px;
+}
+
+/* TASKS */
+
+.tasks-container{
+  min-height:100vh;
+  background:#000;
+}
+
+.tasks-heading{
+  font-size:55px;
+  margin-bottom:30px;
+  color:white;
+  text-shadow:0 0 10px white;
+}
+
+.task-buttons{
+  display:flex;
+  gap:10px;
+  margin-top:20px;
 }
 
 /* AUTH */
@@ -428,23 +420,4 @@ body{
   .sidebar a{
     font-size:20px;
   }
-}
-.task-form input,
-.task-form textarea,
-.task-form select{
-  flex:1;
-  min-width:200px;
-  height:60px;
-  padding:0 18px;
-  border-radius:15px;
-  border:2px solid #333;
-  background:#000;
-  color:white;
-  font-size:18px;
-  display:flex;
-  align-items:center;
-}
-.task-form textarea{
-  padding-top:18px;
-  min-height:60px;
 }

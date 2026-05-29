@@ -15,6 +15,7 @@ const messageRoutes = require("./routes/messageRoutes");
 const settingRoutes = require("./routes/settingRoutes");
 const analyticsRoutes = require("./routes/analyticsRoutes");
 const teamRoutes = require("./routes/teamRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/settings", settingRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/team", teamRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log("Server Running");
