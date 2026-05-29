@@ -1,29 +1,29 @@
 import React from "react";
 
 function ClientCard({ client }) {
+
   return (
+
     <div className="card">
+
       <h3>{client.name}</h3>
 
       <p>
-        <strong>Company:</strong> {client.company}
+        Company: {client.company}
       </p>
 
       <p>
-        <strong>Status:</strong> {client.status}
+        Email: {client.email}
       </p>
 
-      {client.email && (
-        <p>
-          <strong>Email:</strong> {client.email}
-        </p>
-      )}
+      <p>
+        Phone: {client.phone}
+      </p>
 
-      {client.phone && (
-        <p>
-          <strong>Phone:</strong> {client.phone}
-        </p>
-      )}
+      <p>
+        Status: {client.status}
+      </p>
+
     </div>
   );
 }

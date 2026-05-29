@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../api";
 import Sidebar from "../components/Sidebar";
 import StaffCard from "../components/StaffCard";
 
 function Staff() {
 
   const [staffs, setStaffs] = useState([]);
+  const [search, setSearch] = useState("");
+  const [editId, setEditId] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -22,51 +24,86 @@ function Staff() {
 
     try {
 
-      const res = await axios.get(
+      const res = await API.get(
         "http://localhost:5000/api/staff"
       );
 
-      setStaffs(res.data || []);
+      setStaffs(res.data);
 
     } catch (error) {
-
       console.log(error);
-
-      setStaffs([]);
-
     }
   };
 
   const handleSubmit = async (e) => {
 
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
+    try {
 
-    await axios.post(
-      "http://localhost:5000/api/staff",
-      formData
-    );
+      if (editId) {
 
-    alert("Staff Added Successfully");
+        await API.put(
+          `http://localhost:5000/api/staff/${editId}`,
+          formData
+        );
 
-    fetchStaffs();
+        setEditId(null);
+
+      } else {
+
+        await API.post(
+          "http://localhost:5000/api/staff",
+          formData
+        );
+      }
+
+      fetchStaffs();
+
+      setFormData({
+        name: "",
+        role: "",
+        email: "",
+        department: ""
+      });
+
+    } catch (error) {
+
+      console.log(error);
+    }
+  };
+
+  const deleteStaff = async (id) => {
+
+    try {
+
+      await API.delete(
+        `http://localhost:5000/api/staff/${id}`
+      );
+
+      fetchStaffs();
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const editStaff = (staff) => {
 
     setFormData({
-      name: "",
-      role: "",
-      email: "",
-      department: ""
+      name: staff.name,
+      role: staff.role,
+      email: staff.email,
+      department: staff.department
     });
 
-  } catch (error) {
+    setEditId(staff._id);
+  };
 
-    console.log(error);
+  const filteredStaffs = staffs.filter((staff) =>
+    staff.name.toLowerCase().includes(search.toLowerCase())
+  );
 
-    alert("Error Adding Staff");
-
-  }
-};
   return (
 
     <div className="app">
@@ -78,6 +115,16 @@ function Staff() {
         <h1 className="page-title">
           STAFF MANAGEMENT
         </h1>
+
+        <input
+          type="text"
+          placeholder="Search Staff..."
+          className="search-bar"
+          value={search}
+          onChange={(e) =>
+            setSearch(e.target.value)
+          }
+        />
 
         <form
           className="form-container"
@@ -133,38 +180,46 @@ function Staff() {
           />
 
           <button className="btn">
-            Add Staff
+            {editId ? "Update Staff" : "Add Staff"}
           </button>
 
         </form>
 
         <div className="card-grid">
 
-          {staffs && staffs.length > 0 ? (
+          {filteredStaffs.map((staff) => (
 
-            staffs.map((staff) => (
+            <div key={staff._id}>
 
-              <StaffCard
-                key={staff._id}
-                staff={staff}
-              />
+              <StaffCard staff={staff} />
 
-            ))
+              <button
+                className="edit-btn"
+                onClick={() =>
+                  editStaff(staff)
+                }
+              >
+                Edit
+              </button>
 
-          ) : (
+              <button
+                className="delete-btn"
+                onClick={() =>
+                  deleteStaff(staff._id)
+                }
+              >
+                Delete
+              </button>
 
-            <p style={{ color: "white" }}>
-              No Staff Added
-            </p>
+            </div>
 
-          )}
+          ))}
 
         </div>
 
       </div>
 
     </div>
-
   );
 }
 

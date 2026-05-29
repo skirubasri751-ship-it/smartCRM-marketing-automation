@@ -1,71 +1,73 @@
-import React from "react";
-import Sidebar from "../components/Sidebar";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-function Team() {
+const Team = () => {
 
+  const [team, setTeam] = useState({
+    uiDesigner: 0,
+    marketingLead: 0,
+    developer: 0,
+    sales: 0
+  });
+
+  useEffect(() => {
+    fetchTeam();
+  }, []);
+
+  const fetchTeam = async () => {
+
+    try {
+
+      const res = await axios.get(
+        "http://localhost:5000/api/team"
+      );
+
+      setTeam(res.data);
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const navigate = useNavigate();
   return (
+    <div>
 
-    <div className="app">
+      <h2>Team Overview</h2>
 
-      <Sidebar />
+      <div className="team-grid">
 
-      <div className="main-content">
+        <div className="card">
+          <h3>UI Designer</h3>
+          <p>{team.uiDesigner}</p>
+        </div>
 
-        <h1 className="page-title">
-          TEAM MEMBERS
-        </h1>
-
-        <div className="card-grid">
-
-          <div className="card">
-            <h3>Marketing Lead</h3>
-            <p>
-              Handles customer campaigns and CRM strategies.
-            </p>
+        <div className="card">
+          <h3>Marketing Lead</h3>
+          <p>{team.marketingLead}</p>
           </div>
 
-          <div className="card">
-            <h3>Sales Manager</h3>
-            <p>
-              Manages sales and client communication.
-            </p>
-          </div>
+        <div className="card">
+          <h3>Developer</h3>
+          <p>{team.developer}</p>
+        </div>
 
-          <div className="card">
-            <h3>Support Team</h3>
-            <p>
-              Provides customer support and issue resolution.
-            </p>
-          </div>
+        <div className="card">
+          <h3>Sales</h3>
+          <p>{team.sales}</p>
+        </div>
+        <div>
 
-          <div className="card">
-            <h3>UI/UX Designer</h3>
-            <p>
-              Designs professional CRM interfaces and layouts.
-            </p>
-          </div>
-
-          <div className="card">
-            <h3>Backend Developer</h3>
-            <p>
-              Maintains APIs, database and server integration.
-            </p>
-          </div>
-
-          <div className="card">
-            <h3>Project Manager</h3>
-            <p>
-              Oversees project planning and team coordination.
-            </p>
-          </div>
+          <button onClick={() => navigate(-1)}>
+          Back
+          </button>
 
         </div>
 
       </div>
 
     </div>
-
   );
-}
+};
 
 export default Team;

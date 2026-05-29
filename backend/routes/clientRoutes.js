@@ -22,5 +22,37 @@ router.delete("/:id", async (req, res) => {
   await Client.findByIdAndDelete(req.params.id);
   res.json({ message: "Client Deleted" });
 });
+router.delete("/:id", async (req, res) => {
+
+  try {
+
+    await Client.findByIdAndDelete(req.params.id);
+
+    res.json({
+      message: "Client Deleted"
+    });
+
+  } catch (error) {
+
+    res.status(500).json(error);
+  }
+});
+router.put("/:id", async (req, res) => {
+
+  try {
+
+    const updated = await Client.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+
+    res.json(updated);
+
+  } catch (error) {
+
+    res.status(500).json(error);
+  }
+});
 
 module.exports = router;

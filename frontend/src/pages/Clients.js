@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../api";
 import Sidebar from "../components/Sidebar";
 import ClientCard from "../components/ClientCard";
 
 function Clients() {
 
   const [clients, setClients] = useState([]);
+  const [search, setSearch] = useState("");
+  const [editId, setEditId] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
     company: "",
-    status: "",
     email: "",
-    phone: ""
+    phone: "",
+    status: ""
   });
 
   useEffect(() => {
@@ -20,30 +22,93 @@ function Clients() {
   }, []);
 
   const fetchClients = async () => {
-    const res = await axios.get("https://smart-crm-marketing-automation.vercel.app/api/clients");
-    setClients(res.data);
+
+    try {
+
+      const res = await API.get(
+        "http://localhost:5000/api/clients"
+      );
+
+      setClients(res.data);
+
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleSubmit = async (e) => {
+
     e.preventDefault();
 
-    await axios.post(
-      "http://localhost:5000/api/clients",
-      formData
-    );
+    try {
 
-    fetchClients();
+      if (editId) {
 
-    setFormData({
-      name: "",
-      company: "",
-      status: "",
-      email: "",
-      phone: ""
-    });
+        await API.put(
+          `http://localhost:5000/api/clients/${editId}`,
+          formData
+        );
+
+        setEditId(null);
+
+      } else {
+
+        await API.post(
+          "http://localhost:5000/api/clients",
+          formData
+        );
+      }
+
+      fetchClients();
+
+      setFormData({
+        name: "",
+        company: "",
+        email: "",
+        phone: "",
+        status: ""
+      });
+
+    } catch (error) {
+
+      console.log(error);
+    }
   };
 
+  const deleteClient = async (id) => {
+
+    try {
+
+      await API.delete(
+        `http://localhost:5000/api/clients/${id}`
+      );
+
+      fetchClients();
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const editClient = (client) => {
+
+    setFormData({
+      name: client.name,
+      company: client.company,
+      email: client.email,
+      phone: client.phone,
+      status: client.status
+    });
+
+    setEditId(client._id);
+  };
+
+  const filteredClients = clients.filter((client) =>
+    client.name.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
+
     <div className="app">
 
       <Sidebar />
@@ -53,6 +118,16 @@ function Clients() {
         <h1 className="page-title">
           CLIENT MANAGEMENT
         </h1>
+
+        <input
+          type="text"
+          placeholder="Search Client..."
+          className="search-bar"
+          value={search}
+          onChange={(e) =>
+            setSearch(e.target.value)
+          }
+        />
 
         <form
           className="form-container"
@@ -84,18 +159,6 @@ function Clients() {
           />
 
           <input
-            type="text"
-            placeholder="Status"
-            value={formData.status}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                status: e.target.value
-              })
-            }
-          />
-
-          <input
             type="email"
             placeholder="Email"
             value={formData.email}
@@ -119,19 +182,52 @@ function Clients() {
             }
           />
 
+          <input
+            type="text"
+            placeholder="Status"
+            value={formData.status}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                status: e.target.value
+              })
+            }
+          />
+
           <button className="btn">
-            Add Client
+            {editId ? "Update Client" : "Add Client"}
           </button>
 
         </form>
 
         <div className="card-grid">
 
-          {clients.map((client) => (
-            <ClientCard
-              key={client._id}
-              client={client}
-            />
+          {filteredClients.map((client) => (
+
+            <div key={client._id}>
+
+              <ClientCard client={client} />
+
+              <button
+                className="edit-btn"
+                onClick={() =>
+                  editClient(client)
+                }
+              >
+                Edit
+              </button>
+
+              <button
+                className="delete-btn"
+                onClick={() =>
+                  deleteClient(client._id)
+                }
+              >
+                Delete
+              </button>
+
+            </div>
+
           ))}
 
         </div>

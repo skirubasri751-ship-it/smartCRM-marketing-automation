@@ -54,5 +54,38 @@ router.post("/", async (req, res) => {
   }
 
 });
+router.put("/:id", async (req, res) => {
+
+  try {
+
+    const updated = await Staff.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+
+    res.json(updated);
+
+  } catch (error) {
+
+    res.status(500).json(error);
+  }
+});
+
+router.delete("/:id", async (req, res) => {
+
+  try {
+
+    await Staff.findByIdAndDelete(req.params.id);
+
+    res.json({
+      message: "Staff Deleted"
+    });
+
+  } catch (error) {
+
+    res.status(500).json(error);
+  }
+});
 
 module.exports = router;

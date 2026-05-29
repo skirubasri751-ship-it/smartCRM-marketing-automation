@@ -1,33 +1,98 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
+import API from "../api";
 import Sidebar from "../components/Sidebar";
 
 function Settings() {
 
-  const [settings, setSettings] = useState({
-    companyName:"",
-    businessEmail:""
+  const [settings, setSettings] = useState([]);
+  const [search, setSearch] = useState("");
+  const [editId, setEditId] = useState(null);
+
+  const [formData, setFormData] = useState({
+    companyName: "",
+    businessEmail: ""
   });
 
-  const handleSubmit = async(e) => {
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = async () => {
+
+    try {
+
+      const res = await API.get("/settings");
+
+      setSettings(res.data);
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleSubmit = async (e) => {
 
     e.preventDefault();
 
-    try{
+    try {
 
-      await axios.post(
-        "http://localhost:5000/api/settings",
-        settings
-      );
+      if (editId) {
 
-      alert("Settings Saved");
+        await API.put(
+          `/settings/${editId}`,
+          formData
+        );
 
-    }catch(error){
+      } else {
 
-      alert("Error Saving Settings");
+        await API.post(
+          "/settings",
+          formData
+        );
+      }
 
+      fetchSettings();
+
+      setEditId(null);
+
+      setFormData({
+        companyName: "",
+        businessEmail: ""
+      });
+
+    } catch (error) {
+      console.log(error);
     }
   };
+
+  const deleteSetting = async (id) => {
+
+    try {
+
+      await API.delete(`/settings/${id}`);
+
+      fetchSettings();
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const editSetting = (setting) => {
+
+    setFormData({
+      companyName: setting.companyName,
+      businessEmail: setting.businessEmail
+    });
+
+    setEditId(setting._id);
+  };
+
+  const filteredSettings = settings.filter((setting) =>
+    setting.companyName
+      ?.toLowerCase()
+      .includes(search.toLowerCase())
+  );
 
   return (
 
@@ -37,9 +102,17 @@ function Settings() {
 
       <div className="main-content">
 
-        <h1 className="page-title">
-          SETTINGS
-        </h1>
+        <h1>SETTINGS</h1>
+
+        <input
+          type="text"
+          placeholder="Search Company"
+          className="search-bar"
+          value={search}
+          onChange={(e) =>
+            setSearch(e.target.value)
+          }
+        />
 
         <form
           className="form-container"
@@ -49,11 +122,11 @@ function Settings() {
           <input
             type="text"
             placeholder="Company Name"
-            value={settings.companyName}
-            onChange={(e)=>
-              setSettings({
-                ...settings,
-                companyName:e.target.value
+            value={formData.companyName}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                companyName: e.target.value
               })
             }
           />
@@ -61,20 +134,61 @@ function Settings() {
           <input
             type="email"
             placeholder="Business Email"
-            value={settings.businessEmail}
-            onChange={(e)=>
-              setSettings({
-                ...settings,
-                businessEmail:e.target.value
+            value={formData.businessEmail}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                businessEmail: e.target.value
               })
             }
           />
 
           <button className="btn">
-            Save Settings
+            {editId ? "Update" : "Add"}
           </button>
 
         </form>
+
+        <div className="card-grid">
+
+          {filteredSettings.map((setting) => (
+
+            <div
+              className="card"
+              key={setting._id}
+            >
+
+              <h3>
+                {setting.companyName}
+              </h3>
+
+              <p>
+                {setting.businessEmail}
+              </p>
+
+              <button
+                className="edit-btn"
+                onClick={() =>
+                  editSetting(setting)
+                }
+              >
+                Edit
+              </button>
+
+              <button
+                className="delete-btn"
+                onClick={() =>
+                  deleteSetting(setting._id)
+                }
+              >
+                Delete
+              </button>
+
+            </div>
+
+          ))}
+
+        </div>
 
       </div>
 

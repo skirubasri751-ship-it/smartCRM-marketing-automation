@@ -1,40 +1,101 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
+import API from "../api";
 import Sidebar from "../components/Sidebar";
 
 function Contact() {
 
-  const [message,setMessage] = useState({
-    name:"",
-    email:"",
-    message:""
+  const [messages, setMessages] = useState([]);
+  const [search, setSearch] = useState("");
+  const [editId, setEditId] = useState(null);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: ""
   });
 
-  const handleSubmit = async(e) => {
+  useEffect(() => {
+    fetchMessages();
+  }, []);
+
+  const fetchMessages = async () => {
+
+    try {
+
+      const res = await API.get("/messages");
+
+      setMessages(res.data);
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleSubmit = async (e) => {
 
     e.preventDefault();
 
-    try{
+    try {
 
-      await axios.post(
-        "http://localhost:5000/api/messages",
-        message
-      );
+      if (editId) {
 
-      alert("Message Sent Successfully");
+        await API.put(
+          `/messages/${editId}`,
+          formData
+        );
 
-      setMessage({
-        name:"",
-        email:"",
-        message:""
+      } else {
+
+        await API.post(
+          "/messages",
+          formData
+        );
+      }
+
+      fetchMessages();
+
+      setEditId(null);
+
+      setFormData({
+        name: "",
+        email: "",
+        message: ""
       });
 
-    }catch(error){
-
-      alert("Message Not Sent");
-
+    } catch (error) {
+      console.log(error);
     }
   };
+
+  const deleteMessage = async (id) => {
+
+    try {
+
+      await API.delete(`/messages/${id}`);
+
+      fetchMessages();
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const editMessage = (msg) => {
+
+    setFormData({
+      name: msg.name,
+      email: msg.email,
+      message: msg.message
+    });
+
+    setEditId(msg._id);
+  };
+
+  const filteredMessages = messages.filter((msg) =>
+    msg.name
+      ?.toLowerCase()
+      .includes(search.toLowerCase())
+  );
 
   return (
 
@@ -44,9 +105,17 @@ function Contact() {
 
       <div className="main-content">
 
-        <h1 className="page-title">
-          CONTACT
-        </h1>
+        <h1>CONTACT / MESSAGES</h1>
+
+        <input
+          type="text"
+          placeholder="Search Message"
+          className="search-bar"
+          value={search}
+          onChange={(e) =>
+            setSearch(e.target.value)
+          }
+        />
 
         <form
           className="form-container"
@@ -55,45 +124,84 @@ function Contact() {
 
           <input
             type="text"
-            placeholder="Your Name"
-            value={message.name}
-            onChange={(e)=>
-              setMessage({
-                ...message,
-                name:e.target.value
+            placeholder="Name"
+            value={formData.name}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                name: e.target.value
               })
             }
           />
 
           <input
             type="email"
-            placeholder="Your Email"
-            value={message.email}
-            onChange={(e)=>
-              setMessage({
-                ...message,
-                email:e.target.value
+            placeholder="Email"
+            value={formData.email}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                email: e.target.value
               })
             }
           />
 
-          <textarea
-            rows="5"
-            placeholder="Your Message"
-            value={message.message}
-            onChange={(e)=>
-              setMessage({
-                ...message,
-                message:e.target.value
+          <input
+            type="text"
+            placeholder="Message"
+            value={formData.message}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                message: e.target.value
               })
             }
           />
 
           <button className="btn">
-            Send Message
+            {editId ? "Update" : "Add"}
           </button>
 
         </form>
+
+        <div className="card-grid">
+
+          {filteredMessages.map((msg) => (
+
+            <div
+              className="card"
+              key={msg._id}
+            >
+
+              <h3>{msg.name}</h3>
+
+              <p>{msg.email}</p>
+
+              <p>{msg.message}</p>
+
+              <button
+                className="edit-btn"
+                onClick={() =>
+                  editMessage(msg)
+                }
+              >
+                Edit
+              </button>
+
+              <button
+                className="delete-btn"
+                onClick={() =>
+                  deleteMessage(msg._id)
+                }
+              >
+                Delete
+              </button>
+
+            </div>
+
+          ))}
+
+        </div>
 
       </div>
 

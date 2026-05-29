@@ -1,18 +1,24 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Sidebar from "../components/Sidebar";
-import TaskCard from "../components/TaskCard";
+import { useNavigate } from "react-router-dom";
 
-function Tasks() {
+const Tasks = () => {
+
+  const navigate = useNavigate();
 
   const [tasks, setTasks] = useState([]);
 
+  const [search, setSearch] = useState("");
+
+  const [editingId, setEditingId] = useState(null);
+
   const [formData, setFormData] = useState({
     title: "",
-    priority: "",
-    status: ""
+    description: "",
+    status: "Pending"
   });
 
+  // FETCH TASKS
   useEffect(() => {
     fetchTasks();
   }, []);
@@ -25,20 +31,16 @@ function Tasks() {
         "http://localhost:5000/api/tasks"
       );
 
-      setTasks(res.data || []);
+      setTasks(res.data);
 
     } catch (error) {
 
       console.log(error);
-
-      setTasks([]);
-
     }
   };
 
-  const handleSubmit = async (e) => {
-
-    e.preventDefault();
+  // ADD TASK
+  const addTask = async () => {
 
     try {
 
@@ -51,106 +53,226 @@ function Tasks() {
 
       setFormData({
         title: "",
-        priority: "",
-        status: ""
+        description: "",
+        status: "Pending"
       });
 
     } catch (error) {
 
       console.log(error);
-
-      alert("Error Adding Task");
-
     }
   };
 
+  // DELETE TASK
+  const deleteTask = async (id) => {
+
+    try {
+
+      await axios.delete(
+        `http://localhost:5000/api/tasks/${id}`
+      );
+
+      fetchTasks();
+
+    } catch (error) {
+
+      console.log(error);
+    }
+  };
+
+  // EDIT TASK
+  const editTask = (task) => {
+
+    setEditingId(task._id);
+
+    setFormData({
+      title: task.title || "",
+      description: task.description || "",
+      status: task.status || "Pending"
+    });
+  };
+
+  // UPDATE TASK
+  const updateTask = async () => {
+
+    try {
+
+      await axios.put(
+        `http://localhost:5000/api/tasks/${editingId}`,
+        formData
+      );
+
+      fetchTasks();
+
+      setEditingId(null);
+
+      setFormData({
+        title: "",
+        description: "",
+        status: "Pending"
+      });
+
+    } catch (error) {
+
+      console.log(error);
+    }
+  };
+
+  // SEARCH
+  const filteredTasks = tasks.filter((task) =>
+    task.title &&
+    task.title.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
 
-    <div className="app">
+    <div className="tasks-container">
 
-      <Sidebar />
+      {/* BACK BUTTON */}
 
-      <div className="main-content">
+      <button
+        onClick={() => navigate(-1)}
+        className="back-btn"
+      >
+        ← Back
+      </button>
 
-        <h1 className="page-title">
-          TASK MANAGEMENT
-        </h1>
+      <h1 className="tasks-heading">
+        Tasks Management
+      </h1>
 
-        <form
-          className="form-container"
-          onSubmit={handleSubmit}
+      {/* SEARCH */}
+
+      <input
+        type="text"
+        placeholder="Search Task"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="search-input"
+      />
+
+      {/* FORM */}
+
+      <div className="task-form">
+
+        <h2>
+          {editingId ? "Edit Task" : "Add Task"}
+        </h2>
+
+        <input
+          type="text"
+          placeholder="Task Title"
+          value={formData.title}
+          onChange={(e) =>
+            setFormData({
+              ...formData,
+              title: e.target.value
+            })
+          }
+        />
+
+        <textarea
+          placeholder="Task Description"
+          value={formData.description}
+          onChange={(e) =>
+            setFormData({
+              ...formData,
+              description: e.target.value
+            })
+          }
+        />
+
+        <select
+          value={formData.status}
+          onChange={(e) =>
+            setFormData({
+              ...formData,
+              status: e.target.value
+            })
+          }
         >
 
-          <input
-            type="text"
-            placeholder="Task Title"
-            value={formData.title}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                title: e.target.value
-              })
-            }
-          />
+          <option value="Pending">
+            Pending
+          </option>
 
-          <input
-            type="text"
-            placeholder="Priority"
-            value={formData.priority}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                priority: e.target.value
-              })
-            }
-          />
+          <option value="Completed">
+            Completed
+          </option>
 
-          <input
-            type="text"
-            placeholder="Status"
-            value={formData.status}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                status: e.target.value
-              })
-            }
-          />
+        </select>
 
-          <button className="btn">
+        {editingId ? (
+
+          <button
+            onClick={updateTask}
+            className="update-btn"
+          >
+            Update Task
+          </button>
+
+        ) : (
+
+          <button
+            onClick={addTask}
+            className="add-btn"
+          >
             Add Task
           </button>
 
-        </form>
+        )}
 
-        <div className="card-grid">
+      </div>
 
-          {tasks && tasks.length > 0 ? (
+      {/* TASKS */}
 
-            tasks.map((task) => (
+      <div className="tasks-grid">
 
-              <TaskCard
-                key={task._id}
-                task={task}
-              />
+        {filteredTasks.map((task) => (
 
-            ))
+          <div
+            key={task._id}
+            className="task-card"
+          >
 
-          ) : (
+            <h3>
+              {task.title}
+            </h3>
 
-            <p style={{ color: "white" }}>
-              No Tasks Added
+            <p>
+              {task.description}
             </p>
 
-          )}
+            <p>
+              Status: {task.status}
+            </p>
 
-        </div>
+            <div className="task-buttons">
+
+              <button
+                onClick={() => editTask(task)}
+                className="edit-btn"
+              >
+                Edit
+              </button>
+
+              <button
+                onClick={() => deleteTask(task._id)}
+                className="delete-btn"
+              >
+                Delete
+              </button>
+
+            </div>
+
+          </div>
+
+        ))}
 
       </div>
 
     </div>
-
   );
-}
+};
 
 export default Tasks;
