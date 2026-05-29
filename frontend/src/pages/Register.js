@@ -1,61 +1,130 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import API from "../api";
+import React, { useState } from "react";
 
-function Register() {
+import axios from "axios";
+
+import { useNavigate, Link } from "react-router-dom";
+
+const Register = () => {
+
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
 
-  const handleRegister = async () => {
+    name: "",
+    email: "",
+    password: ""
+
+  });
+
+  const handleChange = (e) => {
+
+    setFormData({
+
+      ...formData,
+
+      [e.target.name]: e.target.value
+
+    });
+  };
+
+  const handleSubmit = async (e) => {
+
+    e.preventDefault();
+
     try {
-      await API.post("/auth/register", {
-        username,
-        email,
-        password,
-      });
 
-      alert("Registration Successful");
+      const res = await axios.post(
+
+        "http://localhost:5000/api/auth/register",
+
+        formData
+      );
+
+      alert(res.data.message);
 
       navigate("/");
+
     } catch (error) {
-      alert("Registration Failed");
+
+      alert(
+
+        error.response?.data?.message ||
+
+        "Registration Failed"
+      );
     }
   };
 
   return (
+
     <div className="auth-container">
+
       <div className="auth-box">
-        <h1>REGISTER</h1>
 
-        <input
-          type="text"
-          placeholder="Username"
-          onChange={(e) => setUsername(e.target.value)}
-        />
+        <h1 className="auth-title">
+          Register
+        </h1>
 
-        <input
-          type="email"
-          placeholder="Email"
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <form onSubmit={handleSubmit}>
 
-        <input
-          type="password"
-          placeholder="Password"
-          onChange={(e) => setPassword(e.target.value)}
-        />
+          <input
+            type="text"
+            name="name"
+            placeholder="Enter Name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+          />
 
-        <button onClick={handleRegister}>Register</button>
+          <input
+            type="email"
+            name="email"
+            placeholder="Enter Email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
 
-        <p>
-          Already have account? <Link to="/">Login</Link>
+          <input
+            type="password"
+            name="password"
+            placeholder="Enter Password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
+
+          <button type="submit">
+            Register
+          </button>
+
+        </form>
+
+        <p
+          style={{
+            marginTop: "20px",
+            textAlign: "center",
+            color: "white"
+          }}
+        >
+          Already have an account?
+
+          <Link
+            to="/"
+            style={{
+              color: "#ff003c",
+              marginLeft: "5px"
+            }}
+          >
+            Login
+          </Link>
+
         </p>
+
       </div>
+
     </div>
   );
-}
+};
 
 export default Register;

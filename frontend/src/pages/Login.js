@@ -1,53 +1,138 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import API from "../api";
+import React, { useState } from "react";
 
-function Login() {
+import axios from "axios";
+
+import { useNavigate, Link } from "react-router-dom";
+
+const Login = () => {
+
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
 
-  const handleLogin = async () => {
+    email: "",
+    password: ""
+
+  });
+
+  const handleChange = (e) => {
+
+    setFormData({
+
+      ...formData,
+
+      [e.target.name]: e.target.value
+
+    });
+  };
+
+  const handleSubmit = async (e) => {
+
+    e.preventDefault();
+
     try {
-      await API.post("/auth/login", {
-        email,
-        password,
-      });
+
+      const res = await axios.post(
+
+        "http://localhost:5000/api/auth/login",
+
+        formData
+      );
+
+      /* SAVE JWT TOKEN */
+
+      localStorage.setItem(
+
+        "token",
+
+        res.data.token
+      );
+
+      /* SAVE USER */
+
+      localStorage.setItem(
+
+        "user",
+
+        JSON.stringify(res.data.user)
+      );
 
       alert("Login Successful");
 
       navigate("/dashboard");
+
     } catch (error) {
-      alert("Invalid Credentials");
+
+      alert(
+
+        error.response?.data?.message ||
+
+        "Login Failed"
+      );
     }
   };
 
   return (
+
     <div className="auth-container">
+
       <div className="auth-box">
-        <h1>SMARTCRM</h1>
 
-        <input
-          type="email"
-          placeholder="Email"
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <h1 className="auth-title">
+          Login
+        </h1>
 
-        <input
-          type="password"
-          placeholder="Password"
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <form onSubmit={handleSubmit}>
 
-        <button onClick={handleLogin}>Login</button>
+          <input
+            type="email"
+            name="email"
+            placeholder="Enter Email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
 
-        <p>
-          No Account? <Link to="/register">Register</Link>
+          <input
+            type="password"
+            name="password"
+            placeholder="Enter Password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
+
+          <button type="submit">
+            Login
+          </button>
+
+        </form>
+
+        <p
+          style={{
+            marginTop: "20px",
+            textAlign: "center",
+            color: "white"
+          }}
+        >
+          Don't have an account?
+
+          <Link
+            to="/register"
+            style={{
+              color: "#ff003c",
+              marginLeft: "5px"
+            }}
+          >
+            Register
+          </Link>
+
         </p>
+
       </div>
+
     </div>
   );
-}
+};
 
 export default Login;
