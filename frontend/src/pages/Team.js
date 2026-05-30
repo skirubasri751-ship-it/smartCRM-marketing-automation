@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../api";
 import { useNavigate } from "react-router-dom";
 
 const Team = () => {
@@ -19,8 +19,8 @@ const Team = () => {
 
     try {
 
-      const res = await axios.get(
-        "${API_URL}/api/team"
+      const res = await API.get(
+        "/team"
       );
 
       setTeam(res.data);
