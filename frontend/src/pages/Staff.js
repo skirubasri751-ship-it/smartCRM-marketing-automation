@@ -25,7 +25,7 @@ function Staff() {
     try {
 
       const res = await API.get(
-        "http://localhost:5000/api/staff"
+        "/staff"
       );
 
       setStaffs(res.data);
@@ -44,7 +44,7 @@ function Staff() {
       if (editId) {
 
         await API.put(
-          `http://localhost:5000/api/staff/${editId}`,
+          `/staff/${editId}`,
           formData
         );
 
@@ -53,7 +53,7 @@ function Staff() {
       } else {
 
         await API.post(
-          "http://localhost:5000/api/staff",
+          "/staff",
           formData
         );
       }
@@ -78,7 +78,7 @@ function Staff() {
     try {
 
       await API.delete(
-        `http://localhost:5000/api/staff/${id}`
+        `/staff/${id}`
       );
 
       fetchStaffs();

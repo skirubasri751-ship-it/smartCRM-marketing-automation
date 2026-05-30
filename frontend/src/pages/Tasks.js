@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../api";
 import { useNavigate } from "react-router-dom";
 
 const Tasks = () => {
@@ -27,8 +27,8 @@ const Tasks = () => {
 
     try {
 
-      const res = await axios.get(
-        "http://localhost:5000/api/tasks"
+      const res = await API.get(
+        "/tasks"
       );
 
       setTasks(res.data);
@@ -44,8 +44,8 @@ const Tasks = () => {
 
     try {
 
-      await axios.post(
-        "http://localhost:5000/api/tasks",
+      await API.post(
+        "/tasks",
         formData
       );
 
@@ -68,8 +68,8 @@ const Tasks = () => {
 
     try {
 
-      await axios.delete(
-        `http://localhost:5000/api/tasks/${id}`
+      await API.delete(
+        `/tasks/${id}`
       );
 
       fetchTasks();
@@ -97,8 +97,8 @@ const Tasks = () => {
 
     try {
 
-      await axios.put(
-        `http://localhost:5000/api/tasks/${editingId}`,
+      await API.put(
+        `/tasks/${editingId}`,
         formData
       );
 

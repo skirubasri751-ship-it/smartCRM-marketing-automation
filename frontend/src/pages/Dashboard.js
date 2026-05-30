@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../api";
 import { Link } from "react-router-dom";
 
 const Dashboard = () => {
@@ -20,8 +20,8 @@ const Dashboard = () => {
 
     try {
 
-      const res = await axios.get(
-        "http://localhost:5000/api/dashboard"
+      const res = await API.get(
+        "/dashboard"
       );
 
       setDashboard(res.data);

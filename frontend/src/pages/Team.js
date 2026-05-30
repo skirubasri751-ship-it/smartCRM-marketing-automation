@@ -20,7 +20,7 @@ const Team = () => {
     try {
 
       const res = await axios.get(
-        "http://localhost:5000/api/team"
+        "${API_URL}/api/team"
       );
 
       setTeam(res.data);

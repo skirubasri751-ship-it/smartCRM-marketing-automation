@@ -26,7 +26,7 @@ function Clients() {
     try {
 
       const res = await API.get(
-        "http://localhost:5000/api/clients"
+        "/clients"
       );
 
       setClients(res.data);
@@ -45,7 +45,7 @@ function Clients() {
       if (editId) {
 
         await API.put(
-          `http://localhost:5000/api/clients/${editId}`,
+          `/clients/${editId}`,
           formData
         );
 
@@ -54,7 +54,7 @@ function Clients() {
       } else {
 
         await API.post(
-          "http://localhost:5000/api/clients",
+          "/clients",
           formData
         );
       }
@@ -80,7 +80,7 @@ function Clients() {
     try {
 
       await API.delete(
-        `http://localhost:5000/api/clients/${id}`
+        `/clients/${id}`
       );
 
       fetchClients();
