@@ -1,8 +1,5 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
-const dotenv = require("dotenv");
-
 require("dotenv").config();
 
 const connectDB = require("./config/db");
@@ -18,15 +15,15 @@ const teamRoutes = require("./routes/teamRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 
 const app = express();
-mongoose.connect(process.env.MONGO_URI)
-.then(() => console.log("MongoDB Connected"))
-.catch((err) => console.log(err));
 
+/* Connect Database */
 connectDB();
 
+/* Middleware */
 app.use(cors());
 app.use(express.json());
 
+/* Routes */
 app.use("/api/auth", authRoutes);
 app.use("/api/clients", clientRoutes);
 app.use("/api/staff", staffRoutes);
@@ -37,6 +34,14 @@ app.use("/api/analytics", analyticsRoutes);
 app.use("/api/team", teamRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
-app.listen(process.env.PORT, () => {
-  console.log("Server Running");
+/* Test Route */
+app.get("/", (req, res) => {
+  res.send("SmartCRM Backend Running");
+});
+
+/* Start Server */
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server Running on Port ${PORT}`);
 });
