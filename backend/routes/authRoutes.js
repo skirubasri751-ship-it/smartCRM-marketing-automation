@@ -20,9 +20,12 @@ router.post("/register", async (req, res) => {
     await user.save();
 
     res.json({ message: "User Registered" });
-  } catch (error) {
-    res.status(500).json({ message: "Registration Failed" });
-  }
+  }catch (error) {
+  console.log("REGISTER ERROR:", error);
+  res.status(500).json({
+    message: error.message
+  });
+}
 });
 
 router.post("/login", async (req, res) => {
@@ -59,10 +62,11 @@ router.post("/login", async (req, res) => {
     });
 
   } catch (error) {
-    res.status(500).json({
-      message: "Login Failed"
-    });
-  }
+  console.log("REGISTER ERROR:", error);
+  res.status(500).json({
+    message: error.message
+  });
+}
 });
 
 module.exports = router;
